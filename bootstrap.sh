@@ -32,7 +32,7 @@ while true; do
         echo "Try again..."
         continue
     fi
-    if (( $SSH_PORT < 1024 )) && (( SSH_PORT != 22 )); then
+    if (( $SSH_PORT < 1024 )) && (( $SSH_PORT != 22 )); then
         echo "Warning: port $SSH_PORT is privileged"
     fi
     if ss -tln | grep ":$SSH_PORT"; then
@@ -44,9 +44,10 @@ while true; do
     fi
 done
 
-# Key check if using github.com/user.keys
 while true; do
     read -p "Enter public SSH key or github/user.keys (or just user.keys): " SSH_KEY
+
+    # Get key and check if using github.com/user.keys
     if echo "$SSH_KEY" | grep -q ".keys"; then
         if echo "$SSH_KEY" | grep -q "github.com"; then
             if ! echo "$SSH_KEY" | grep -q "https://"; then
@@ -60,8 +61,7 @@ while true; do
         echo "$SSH_KEY"
         echo " "
         read -p "Key is correct? [Y/n]: " KEY_ANSWER
-        [[ -z "$KEY_ANSWER" ]] && KEY_ANSWER="Y"
-        if [[ "$KEY_ANSWER" == "Y" ]] || [[ "$KEY_ANSWER" == "y" ]]; then
+        if [[ "$KEY_ANSWER" =~ ^[Yy]$ ]] || [[ -z "$KEY_ANSWER" ]]; then
             break
         fi
 
@@ -87,8 +87,6 @@ if ! id "$USERNAME" &>/dev/null; then
 else
     GENERATED_PASSWORD=""
 fi
-
-
 
 mkdir -p "/home/$USERNAME/.ssh"
 chmod 700 "/home/$USERNAME/.ssh"
